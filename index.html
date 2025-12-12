@@ -120,6 +120,70 @@
         .playing .sound-waves { display: block; }
         .playing .sound-off { display: none; }
 
+    
+
+        /* INTRO OVERLAY (добавлено, не трогает существующий дизайн) */
+        .intro {
+            position: fixed;
+            inset: 0;
+            z-index: 9998; /* ниже #project-detail(9999), выше всего остального */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(5, 5, 5, 0.92);
+            backdrop-filter: blur(6px);
+            pointer-events: auto;
+        }
+        .intro.hidden {
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+        .asteroid-btn {
+            position: relative;
+            width: min(680px, 82vw);
+            aspect-ratio: 16 / 9;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            outline: none;
+            display: grid;
+            place-items: center;
+            transform: translateZ(0);
+        }
+        .asteroid-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter:
+                drop-shadow(0 0 24px rgba(255,255,255,0.14))
+                drop-shadow(0 0 90px rgba(255,255,255,0.12));
+            animation: asteroidFloat 3.2s ease-in-out infinite;
+            transform-origin: center;
+            will-change: transform, filter;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+        .asteroid-btn:hover .asteroid-img {
+            filter:
+                drop-shadow(0 0 34px rgba(255,255,255,0.22))
+                drop-shadow(0 0 140px rgba(255,255,255,0.18));
+        }
+        .asteroid-explode .asteroid-img {
+            animation: none;
+            transform: scale(1.02) rotate(0.8deg);
+            filter:
+                drop-shadow(0 0 60px rgba(255,255,255,0.35))
+                drop-shadow(0 0 180px rgba(255,255,255,0.28));
+        }
+        @keyframes asteroidFloat {
+            0%   { transform: translateY(0px) rotate(-0.6deg); }
+            50%  { transform: translateY(-10px) rotate(0.6deg); }
+            100% { transform: translateY(0px) rotate(-0.6deg); }
+        }
+
+
     </style>
 </head>
 <body class="antialiased">
@@ -141,6 +205,18 @@
 
     <!-- ФОН -->
     <canvas id="particle-canvas"></canvas>
+
+    <!-- INTRO OVERLAY -->
+    <div id="intro" class="intro">
+        <button id="asteroid-btn" class="asteroid-btn" aria-label="Enter site">
+            <!-- Положи файл в assets/asteroid.jpg (или .jpeg/.png) -->
+            <img src="assets/asteroid.jpg" alt="Glowing asteroid with TOUCH ME carved" class="asteroid-img">
+        </button>
+        <div class="intro-hint font-tech text-[10px] uppercase tracking-[0.2em] text-gray-400 mt-6 opacity-70">
+            Click / tap the asteroid to enter
+        </div>
+    </div>
+
 
     <!-- МЕНЮ -->
     <nav class="fixed top-0 w-full z-40 px-6 md:px-12 py-8 flex justify-between items-start mix-blend-difference text-white">
@@ -297,8 +373,11 @@
             }
         }
 
-        // Авто-запуск при первом клике (Backup plan)
+        let introDone = false;
+
+        // Авто-запуск по клику — но только ПОСЛЕ интро (чтобы музыка не стартовала раньше)
         window.addEventListener('click', () => {
+            if (!introDone) return;
             if (audio.paused && !soundBtn.classList.contains('playing')) {
                 toggleAudio();
             }
@@ -407,6 +486,55 @@
         // 5. ANIMATIONS
         gsap.registerPlugin(ScrollTrigger);
         gsap.to('.hero-title', { opacity: 1, y: 0, duration: 2, ease: "power3.out", delay: 0.5 });
+
+        // 6. INTRO OVERLAY LOGIC (астеройд -> "молекулы" -> открываем сайт + запускаем музыку)
+        const introEl = document.getElementById('intro');
+        const asteroidBtn = document.getElementById('asteroid-btn');
+
+        function burstParticles(fromX, fromY) {
+            // Собираем существующие частицы в точку и разгоняем, чтобы выглядело как распад
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                p.x = fromX;
+                p.y = fromY;
+
+                const a = Math.random() * Math.PI * 2;
+                const s = 2 + Math.random() * 6;
+                p.vx = Math.cos(a) * s;
+                p.vy = Math.sin(a) * s;
+
+                p.size = 0.6 + Math.random() * 2.2;
+            }
+        }
+
+        function revealSite() {
+            introDone = true;
+
+            introEl.classList.add('hidden');
+            setTimeout(() => { introEl.style.display = 'none'; }, 700);
+
+            // Музыка стартует строго после нажатия на астеройд
+            toggleAudio();
+        }
+
+        if (asteroidBtn && introEl) {
+            asteroidBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+
+                asteroidBtn.classList.add('asteroid-explode');
+
+                const r = asteroidBtn.getBoundingClientRect();
+                const cx = r.left + r.width / 2;
+                const cy = r.top + r.height / 2;
+
+                burstParticles(cx, cy);
+
+                setTimeout(() => {
+                    revealSite();
+                }, 650);
+            }, { once: true });
+        }
+
 
     </script>
 </body>
