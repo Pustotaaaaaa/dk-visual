@@ -7,10 +7,10 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Шрифты: IBM Plex Mono и DM Serif Display -->
+    <!-- Шрифты: DM Serif Display (Как просил) и IBM Plex Mono (Технический) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Mono:wght@300;500&display=swap" rel="stylesheet">
 
     <!-- Библиотеки -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -55,44 +55,43 @@
         .meteor-btn {
             width: 200px; height: 200px;
             border-radius: 50%;
-            /* Бетонная текстура через CSS-шум и градиент */
-            background: radial-gradient(circle at 30% 30%, #444, #1a1a1a);
+            /* Текстура бетона */
+            background: radial-gradient(circle at 30% 30%, #555, #1a1a1a);
             position: relative;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer;
             box-shadow: 
-                inset 0 0 60px rgba(0,0,0,0.9), /* Внутренняя тень */
-                0 0 30px rgba(255,255,255,0.05); /* Внешнее свечение */
+                inset 0 0 60px rgba(0,0,0,0.9),
+                0 0 40px rgba(255,255,255,0.1);
             transition: transform 0.3s;
             animation: breathe 4s ease-in-out infinite;
             overflow: hidden;
         }
         
-        /* Фактура камня */
+        /* Шум (фактура) */
         .meteor-btn::before {
-            content: ''; position: absolute; inset: 0; opacity: 0.3;
+            content: ''; position: absolute; inset: 0; opacity: 0.4;
             background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
             mix-blend-mode: overlay;
         }
 
+        /* Текст выбитый */
         .meteor-text {
-            font-family: 'IBM Plex Mono', monospace; font-weight: 500; font-size: 14px; letter-spacing: 0.2em;
+            font-family: 'DM Serif Display', serif; font-size: 18px; letter-spacing: 0.1em;
             color: rgba(255,255,255,0.9); z-index: 2;
             text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
 
-        .meteor-btn:hover { transform: scale(1.05); box-shadow: 0 0 50px rgba(255,255,255,0.15); }
-        
+        .meteor-btn:hover { transform: scale(1.05); box-shadow: 0 0 60px rgba(255,255,255,0.2); }
         @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
 
-        /* Частицы взрыва */
-        .explosion-particle {
-            position: absolute; background: #888; pointer-events: none;
-        }
+        /* Осколки */
+        .explosion-particle { position: absolute; background: #888; pointer-events: none; border-radius: 50%; }
 
-        /* --- ОСНОВНОЙ САЙТ --- */
-        #main-content { opacity: 0; transition: opacity 1.5s ease; }
+        /* --- ОСНОВНОЙ САЙТ (Скрыт) --- */
+        #main-content { opacity: 0; transition: opacity 1.5s ease; position: relative; z-index: 10; }
 
+        /* 1. КУРСОР */
         .cursor-dot {
             position: fixed; top: 0; left: 0; width: 6px; height: 6px;
             background: white; border-radius: 50%; pointer-events: none; z-index: 10001;
@@ -105,24 +104,45 @@
             transform: translate(-50%, -50%); transition: transform 0.2s;
         }
 
+        /* 2. ФОН (ЧАСТИЦЫ) */
         #particle-canvas {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0; pointer-events: auto;
+            z-index: 0; pointer-events: auto; /* Чтобы реагировали на мышь */
         }
 
+        /* 3. ТИПОГРАФИКА */
         .hero-title {
             font-family: 'DM Serif Display', serif;
             font-size: 11vw; line-height: 0.85; text-transform: uppercase;
             mix-blend-mode: exclusion; letter-spacing: -0.03em;
             opacity: 0; transform: translateY(50px);
         }
+        .credit-text {
+            font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase;
+            letter-spacing: 0.05em; color: #888; line-height: 1.6;
+        }
+        .credit-text span { color: white; }
+        
+        .tag-box {
+            font-family: 'IBM Plex Mono', monospace; 
+            font-size: 10px; border: 1px solid rgba(255,255,255,0.3); 
+            display: inline-block; padding: 4px 8px; margin-bottom: 20px;
+            color: #aaa;
+        }
 
+        /* 4. КАРТОЧКИ (ТВОЯ ЛЮБИМАЯ СТРУКТУРА) */
+        .stack-area { padding-bottom: 10vh; position: relative; z-index: 10; }
         .project-card {
             position: sticky; top: 100px;
-            background: #0a0a0a; border-top: 1px solid #333;
-            min-height: 85vh; display: flex; flex-direction: column;
+            background: rgba(10, 10, 10, 0.8); /* Чуть прозрачный для фона */
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #333;
+            min-height: 85vh;
+            display: flex; flex-direction: column;
             transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
+        
+        .card-image-wrapper { position: relative; overflow: hidden; height: 60vh; }
         .card-img {
             width: 100%; height: 100%; object-fit: cover;
             filter: grayscale(100%); transition: filter 0.5s, transform 0.7s;
@@ -137,6 +157,7 @@
         }
         .open-btn:hover { background: white; color: black; }
 
+        /* ЭКРАН ПЕРЕХОДА */
         #project-detail {
             position: fixed; inset: 0; background: #050505; z-index: 9999;
             transform: translateY(100%); display: flex; justify-content: center; align-items: center;
@@ -152,11 +173,13 @@
 </head>
 <body class="antialiased">
 
-    <!-- МУЗЫКА -->
     <audio id="bg-music" loop><source src="assets/music22.mp3" type="audio/mpeg"></audio>
 
     <div class="cursor-dot"></div>
     <div class="cursor-aura"></div>
+
+    <!-- 3D ФОН (ЧАСТИЦЫ) -->
+    <canvas id="particle-canvas"></canvas>
 
     <!-- ИНТРО -->
     <div id="intro-screen">
@@ -165,11 +188,9 @@
         </div>
     </div>
 
-    <!-- КОНТЕНТ -->
+    <!-- ОСНОВНОЙ САЙТ -->
     <div id="main-content">
         
-        <canvas id="particle-canvas"></canvas>
-
         <nav class="fixed top-0 w-full z-40 px-8 py-8 flex justify-between items-start mix-blend-difference text-white">
             <div class="flex flex-col leading-tight">
                 <span class="font-display font-bold text-4xl tracking-tighter">DK</span>
@@ -192,30 +213,30 @@
             </div>
             <div class="absolute bottom-12 flex justify-between w-full px-12 font-tech text-[10px] text-gray-600 uppercase">
                 <span>Portfolio 2025</span>
-                <span>Status: <span id="build-status">Waiting...</span></span>
+                <span>Constructing: <span id="build-status">Void</span></span>
             </div>
         </header>
 
-        <!-- PROJECTS -->
-        <section class="relative z-10 px-4 md:px-12 pb-20">
+        <!-- ПРОЕКТЫ (ТВОЯ СТРУКТУРА) -->
+        <section class="stack-area relative z-10 px-4 md:px-12">
             
             <!-- 1. FILM -->
             <div id="film" class="project-card group">
                 <div class="grid md:grid-cols-12 h-full">
-                    <div class="md:col-span-4 p-8 md:p-12 flex flex-col justify-between border-r border-white/10 bg-[#0a0a0a]">
+                    <div class="md:col-span-4 p-8 md:p-12 flex flex-col justify-between border-r border-white/10">
                         <div>
-                            <div class="font-tech text-xs border border-white/20 inline-block px-2 py-1 rounded mb-6 text-gray-400">FEATURE FILM</div>
+                            <div class="tag-box">FEATURE FILM</div>
                             <h3 class="font-display text-5xl md:text-7xl uppercase mb-4 leading-none text-white">Oblivion</h3>
                             
                             <div class="font-tech text-xs text-white bg-red-900/30 border border-red-500/50 inline-block px-2 py-1 mb-8">
                                 [ ! ] NOT ARTIFICIAL INTELLIGENCE
                             </div>
                             
-                            <div class="font-tech text-[11px] uppercase tracking-wider text-gray-500 space-y-2">
-                                <p>DIRECTOR: <span class="text-white">JOSEPH KOSINSKI</span></p>
-                                <p>DOP: <span class="text-white">CLAUDIO MIRANDA</span></p>
-                                <p>PROD. DESIGNER: <span class="text-white">DARREN GILFORD</span></p>
-                                <p>YEAR: <span class="text-white">2013</span></p>
+                            <div class="credit-text space-y-2">
+                                <p>DIRECTOR: <span>JOSEPH KOSINSKI</span></p>
+                                <p>DOP: <span>CLAUDIO MIRANDA</span></p>
+                                <p>PROD. DESIGNER: <span>DARREN GILFORD</span></p>
+                                <p>YEAR: <span>2013</span></p>
                             </div>
                             
                             <p class="font-tech text-xs text-gray-600 mt-8 leading-relaxed max-w-xs">
@@ -233,13 +254,13 @@
             <!-- 2. ADVERTISING -->
             <div id="advertising" class="project-card group" style="top: 120px;">
                 <div class="grid md:grid-cols-12 h-full">
-                    <div class="md:col-span-4 p-8 md:p-12 flex flex-col justify-between border-r border-white/10 bg-[#0a0a0a]">
+                    <div class="md:col-span-4 p-8 md:p-12 flex flex-col justify-between border-r border-white/10">
                         <div>
-                            <div class="font-tech text-xs border border-white/20 inline-block px-2 py-1 rounded mb-6 text-gray-400">ADVERTISING PROJECTS</div>
+                            <div class="tag-box">ADVERTISING PROJECTS</div>
                             <h3 class="font-display text-5xl md:text-6xl uppercase mb-8 leading-none text-white">Commercial<br>Works</h3>
-                            <div class="font-tech text-[11px] uppercase tracking-wider text-gray-500 space-y-2">
-                                <p>CLIENTS: <span class="text-white">YANDEX, SBER, MTS</span></p>
-                                <p>SCOPE: <span class="text-white">SET DESIGN & BUILD</span></p>
+                            <div class="credit-text space-y-2">
+                                <p>CLIENTS: <span>YANDEX, SBER, MTS</span></p>
+                                <p>SCOPE: <span>SET DESIGN & BUILD</span></p>
                             </div>
                             <p class="font-tech text-xs text-gray-600 mt-6 leading-relaxed max-w-xs">
                                 High-end commercial set design. Custom fabrications.
@@ -256,13 +277,13 @@
             <!-- 3. OTHER -->
             <div id="other" class="project-card group" style="top: 140px;">
                 <div class="grid md:grid-cols-12 h-full">
-                    <div class="md:col-span-4 p-8 md:p-12 flex flex-col justify-between border-r border-white/10 bg-[#0a0a0a]">
+                    <div class="md:col-span-4 p-8 md:p-12 flex flex-col justify-between border-r border-white/10">
                         <div>
-                            <div class="font-tech text-xs border border-white/20 inline-block px-2 py-1 rounded mb-6 text-gray-400">OTHER PROJECTS</div>
+                            <div class="tag-box">OTHER PROJECTS</div>
                             <h3 class="font-display text-5xl md:text-6xl uppercase mb-8 leading-none text-white">Art &<br>Music</h3>
-                            <div class="font-tech text-[11px] uppercase tracking-wider text-gray-500 space-y-2">
-                                <p>TYPE: <span class="text-white">MUSIC VIDEOS / ART</span></p>
-                                <p>ROLE: <span class="text-white">ART DIRECTION</span></p>
+                            <div class="credit-text space-y-2">
+                                <p>TYPE: <span>MUSIC VIDEOS / ART</span></p>
+                                <p>ROLE: <span>ART DIRECTION</span></p>
                             </div>
                             <p class="font-tech text-xs text-gray-600 mt-6 leading-relaxed max-w-xs">
                                 Experimental spaces and fashion show set designs.
@@ -278,6 +299,7 @@
 
         </section>
 
+        <!-- FOOTER -->
         <footer id="contact" class="bg-[#050505] pt-20 pb-10 px-6 relative z-10 border-t border-white/10">
             <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end">
                 <div>
@@ -296,7 +318,7 @@
         </footer>
     </div>
 
-    <!-- DETAIL SCREEN -->
+    <!-- ДЕТАЛИ -->
     <div id="project-detail">
         <div class="close-btn" onclick="closeProject()">CLOSE [X]</div>
         <div class="text-center">
@@ -315,10 +337,10 @@
             audio.volume = 0.5;
             audio.play().catch(e => console.log(e));
 
-            // Анимация кнопки (сжатие)
+            // Анимация кнопки
             gsap.to(btn, { scale: 0, opacity: 0, duration: 0.3, ease: "back.in(2)" });
 
-            // Взрыв (частицы)
+            // Частицы взрыва
             const rect = btn.getBoundingClientRect();
             const cx = rect.left + rect.width / 2;
             const cy = rect.top + rect.height / 2;
@@ -328,37 +350,30 @@
                 p.className = 'explosion-particle';
                 p.style.width = Math.random() * 4 + 'px';
                 p.style.height = p.style.width;
-                p.style.left = cx + 'px';
-                p.style.top = cy + 'px';
+                p.style.left = cx + 'px'; p.style.top = cy + 'px';
                 document.body.appendChild(p);
-
-                const angle = Math.random() * Math.PI * 2;
-                const dist = Math.random() * 500 + 100;
                 
+                const angle = Math.random() * Math.PI * 2;
+                const dist = Math.random() * 400 + 100;
                 gsap.to(p, {
-                    x: Math.cos(angle) * dist,
-                    y: Math.sin(angle) * dist,
-                    opacity: 0,
-                    duration: 1.5,
-                    ease: "power2.out",
-                    onComplete: () => p.remove()
+                    x: Math.cos(angle) * dist, y: Math.sin(angle) * dist, opacity: 0,
+                    duration: 1.5, ease: "power2.out", onComplete: () => p.remove()
                 });
             }
 
-            // Переход
+            // Показываем сайт
             gsap.to(intro, {
                 opacity: 0, duration: 1, delay: 0.3, pointerEvents: 'none',
                 onComplete: () => {
                     main.style.opacity = 1;
                     gsap.to('.hero-title', { opacity: 1, y: 0, duration: 2, ease: "power3.out" });
-                    
-                    // ВАЖНО: Запуск генерации декораций
+                    // ЗАПУСК ГЕНЕРАЦИИ ДЕКОРАЦИЙ
                     morph();
                 }
             });
         }
 
-        // 2. ОТКРЫТИЕ ПРОЕКТОВ
+        // 2. ОТКРЫТИЕ
         function openProject(name) {
             document.getElementById('detail-title').innerText = name;
             gsap.to('#project-detail', { y: "0%", duration: 0.8, ease: "power4.inOut" });
@@ -367,24 +382,27 @@
             gsap.to('#project-detail', { y: "100%", duration: 0.8, ease: "power4.inOut" });
         }
 
-        // 3. PARTICLES & ARCHITECTURE (THREE.JS)
+        // 3. THREE.JS ЧАСТИЦЫ
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x050505, 0.0012);
+        scene.fog = new THREE.FogExp2(0x050505, 0.001);
 
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
         camera.position.z = 1000;
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         container.appendChild(renderer.domElement);
 
-        const particleCount = 15000;
+        const particleCount = 20000; // Много частиц
         const geometry = new THREE.BufferGeometry();
         const positions = [];
+        const sizes = [];
+        
         for (let i = 0; i < particleCount; i++) {
-            positions.push((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
+            positions.push((Math.random()-0.5)*4000, (Math.random()-0.5)*4000, (Math.random()-0.5)*4000);
+            sizes.push(Math.random() * 2);
         }
         geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
         
@@ -394,72 +412,52 @@
         const particles = new THREE.Points(geometry, material);
         scene.add(particles);
 
-        // ФОРМЫ (Architecture)
+        // ФОРМЫ
         function getChaos() {
             const arr = [];
-            for (let i = 0; i < particleCount; i++) {
-                arr.push((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
-            }
+            for (let i=0; i<particleCount; i++) arr.push((Math.random()-0.5)*4000, (Math.random()-0.5)*4000, (Math.random()-0.5)*4000);
             return arr;
         }
         function getDome() {
             const arr = []; const r = 900;
-            for (let i = 0; i < particleCount; i++) {
-                const u = Math.random(); const v = Math.random();
-                const theta = 2 * Math.PI * u;
-                const phi = Math.acos(2 * v - 1);
-                // Полусфера (купол)
-                if (phi < Math.PI / 2) {
-                    arr.push(r * Math.sin(phi) * Math.cos(theta), r * Math.sin(phi) * Math.sin(theta) - 300, r * Math.cos(phi));
-                } else {
-                    arr.push((Math.random()-0.5)*2000, -800, (Math.random()-0.5)*2000); // Пол
-                }
+            for (let i=0; i<particleCount; i++) {
+                const phi = Math.acos(Math.random()); const theta = Math.random() * Math.PI * 2;
+                arr.push(r * Math.sin(phi) * Math.cos(theta), r * Math.sin(phi) * Math.sin(theta) - 300, r * Math.cos(phi));
             }
             return arr;
         }
         function getHall() {
             const arr = [];
-            for (let i = 0; i < particleCount; i++) {
-                // Коридор из колонн
-                const x = (Math.random() > 0.5 ? 400 : -400) + (Math.random()-0.5)*100;
-                const z = (Math.random() - 0.5) * 4000;
-                const y = (Math.random() - 0.5) * 1000;
+            for (let i=0; i<particleCount; i++) {
+                const x = (Math.random() > 0.5 ? 500 : -500) + (Math.random()-0.5)*100;
+                const z = (Math.random()-0.5)*4000;
+                const y = (Math.random()-0.5)*1200;
                 arr.push(x, y, z);
             }
             return arr;
         }
 
-        const shapes = [
-            { name: 'Chaos Field', func: getChaos },
-            { name: 'The Dome', func: getDome },
-            { name: 'Great Hall', func: getHall }
-        ];
+        const shapes = [ {n:'Chaos', f:getChaos}, {n:'The Dome', f:getDome}, {n:'Great Hall', f:getHall} ];
         let shapeIdx = 0;
         const posAttr = geometry.attributes.position;
 
         function morph() {
-            // Переключаем форму
-            const shapeObj = shapes[shapeIdx];
-            const target = shapeObj.func();
+            const target = shapes[shapeIdx].f();
             const current = posAttr.array;
-            document.getElementById('build-status').innerText = shapeObj.name;
+            document.getElementById('build-status').innerText = shapes[shapeIdx].n;
 
-            // Анимация перехода (GSAP)
             const proxy = { t: 0 };
             const startPos = Float32Array.from(current);
 
             gsap.to(proxy, {
-                t: 1,
-                duration: 6, // Медленно (Вальяжно)
-                ease: "power2.inOut",
+                t: 1, duration: 6, ease: "power2.inOut",
                 onUpdate: () => {
-                    for (let i = 0; i < particleCount * 3; i++) {
+                    for (let i=0; i<particleCount*3; i++) {
                         current[i] = startPos[i] + (target[i] - startPos[i]) * proxy.t;
                     }
                     posAttr.needsUpdate = true;
                 },
                 onComplete: () => {
-                    // Следующая форма через паузу
                     gsap.delayedCall(4, () => {
                         shapeIdx = (shapeIdx + 1) % shapes.length;
                         morph();
@@ -471,17 +469,16 @@
         // Loop
         let mx = 0, my = 0;
         window.addEventListener('mousemove', e => {
-            mx = (e.clientX - window.innerWidth/2) * 0.0005;
-            my = (e.clientY - window.innerHeight/2) * 0.0005;
-            
-            gsap.to('.cursor-dot', { x: e.clientX, y: e.clientY, duration: 0.1 });
-            gsap.to('.cursor-aura', { x: e.clientX, y: e.clientY, duration: 0.3 });
+            mx = (e.clientX - window.innerWidth/2)*0.0005; 
+            my = (e.clientY - window.innerHeight/2)*0.0005;
+            gsap.to('.cursor-dot', {x: e.clientX, y: e.clientY, duration: 0.1});
+            gsap.to('.cursor-aura', {x: e.clientX, y: e.clientY, duration: 0.3});
         });
 
         function animate() {
             requestAnimationFrame(animate);
-            particles.rotation.y += 0.001; // Вращение мира
-            particles.rotation.x += (my - particles.rotation.x) * 0.05; // Параллакс
+            particles.rotation.y += 0.001; 
+            particles.rotation.x += (my - particles.rotation.x) * 0.05;
             renderer.render(scene, camera);
         }
         animate();
@@ -491,16 +488,8 @@
         function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
         requestAnimationFrame(raf);
 
-        // Resize
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        // Animations Scroll
+        // Scroll
         gsap.registerPlugin(ScrollTrigger);
-
     </script>
 </body>
 </html>
