@@ -126,7 +126,7 @@
         .intro {
             position: fixed;
             inset: 0;
-            z-index: 9998; /* ниже #project-detail(9999), выше всего остального */
+            z-index: 10002; /* ниже #project-detail(9999), выше всего остального */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -517,24 +517,34 @@
             toggleAudio();
         }
 
-        if (asteroidBtn && introEl) {
-            asteroidBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
+        
+if (asteroidBtn && introEl) {
+    const triggerIntro = (e) => {
+        if (e) e.stopPropagation();
 
-                asteroidBtn.classList.add('asteroid-explode');
+        asteroidBtn.classList.add('asteroid-explode');
 
-                const r = asteroidBtn.getBoundingClientRect();
-                const cx = r.left + r.width / 2;
-                const cy = r.top + r.height / 2;
+        const r = asteroidBtn.getBoundingClientRect();
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height / 2;
 
-                burstParticles(cx, cy);
+        // Взрыв частиц — если по какой-то причине particles ещё не готовы, просто пропускаем эффект
+        try { burstParticles(cx, cy); } catch (err) {}
 
-                setTimeout(() => {
-                    revealSite();
-                }, 650);
-            }, { once: true });
-        }
+        setTimeout(() => {
+            revealSite();
+        }, 650);
+    };
 
+    // На десктопе и мобиле надёжнее pointerdown, но оставим и click как запасной
+    asteroidBtn.addEventListener('pointerdown', triggerIntro, { once: true });
+    asteroidBtn.addEventListener('click', (e) => e.preventDefault(), { passive: false });
+
+    // Запасной вариант: клик по фону интро (если попал мимо кнопки)
+    introEl.addEventListener('pointerdown', (e) => {
+        if (e.target === introEl) triggerIntro(e);
+    }, { once: true });
+}
 
     </script>
 </body>
